@@ -51,8 +51,11 @@ def load_data():
                 df = pd.read_csv(uploaded_file, sep='\t')
             st.session_state.df = df
     else:
-        df = sns.load_dataset(data_option)
-        st.session_state.df = df
+        try:
+            df = sns.load_dataset(data_option.lower())
+            st.session_state.df = df
+        except ValueError:
+            st.error(f"Dataset '{data_option}' not found. Please choose a different dataset.")
 
 def preprocess_data(df):
     st.title("Data Preprocessing")
