@@ -179,20 +179,22 @@ def train_model(X, y, model_name, problem_type, params):
     save_model(model)
     return metrics, model, X_test, y_test
 def save_model(model):
-    # Define the filename
     model_filename = "trained_model.pkl"
-    
-    # Save the model
-    with open(model_filename, 'wb') as file:
+    models_dir = "models"
+    if not os.path.exists(models_dir):
+        os.makedirs(models_dir)
+    model_path = os.path.join(models_dir, model_filename)
+    with open(model_path, 'wb') as file:
         joblib.dump(model, file)
-        
-    # Get the user's Downloads folder path
-    downloads_folder = os.path.join(os.path.expanduser('~'), 'Downloads')
-    
-    # Move the model file to the Downloads folder
-    shutil.move(model_filename, os.path.join(downloads_folder, model_filename))
-    
-    st.success(f"Model saved successfully to {downloads_folder}")
+    st.success(f"Model saved successfully at {model_path}")
+    # Provide a download link
+    with open(model_path, 'rb') as f:
+        st.download_button(
+            label="Download Model",
+            data=f,
+            file_name=model_filename,
+            mime="application/octet-stream"
+        )
 def evaluate_model(y_test, y_pred, problem_type):
     if problem_type == 'Regression':
         rmse = np.sqrt(mean_squared_error(y_test, y_pred))
